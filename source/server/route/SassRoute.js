@@ -22,7 +22,7 @@ class SassRoute extends Route
      */
     constructor(cliLogger, pathesConfiguration)
     {
-        super(cliLogger);
+        super(cliLogger.createPrefixed('route.sassroute'));
 
         //Check params
         assertParameter(this, 'pathesConfiguration', pathesConfiguration, true, PathesConfiguration);
