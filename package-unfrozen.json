@@ -1,5 +1,5 @@
 {
-  "name": "entoj-empty",
+  "name": "entoj-sass",
   "version": "0.1.0",
   "private": true,
   "engines": {
@@ -13,14 +13,25 @@
     "test": "bash scripts/test"
   },
   "dependencies": {
-    "entoj-system": "*"
+    "entoj-system": "*",
+    "sass-lint": "*",
+    "gonzales-pe": "*",
+    "co": "*",
+    "through2": "*",
+    "vinyl": "*",
+    "node-sass": "*",
+    "es6-template-strings": "*",
+    "gulp-util": "*",
+    "gulp-sourcemaps": "*",
+    "postcss": "*",
+    "css-mqpacker": "*",
+    "cssnano": "*",
+    "postcss-cssnext": "*",
+    "postcss-urlrewrite": "*",
+    "doiuse": "*"
   },
   "devDependencies": {
     "chai": "*",
-    "chai-as-promised": "*",
-    "chai-string": "*",
-    "chai-subset": "*",
-    "chai-things": "*",
     "coveralls": "*",
     "git-changelog": "*",
     "ink-docstrap": "*",
@@ -28,7 +39,6 @@
     "jsdoc": "*",
     "mocha": "*",
     "sinon": "*",
-    "eslint": "*",
-    "entoj-test-fixture": "*"
+    "eslint": "*"
   }
 }
