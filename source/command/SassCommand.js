@@ -27,6 +27,7 @@ const co = require('co');
 class SassCommand extends Command
 {
     /**
+     * @param {application.Context} context
      */
     constructor(context)
     {
@@ -38,7 +39,7 @@ class SassCommand extends Command
 
 
     /**
-     * @inheritDoc
+     * @ignore
      */
     static get injections()
     {
@@ -47,7 +48,7 @@ class SassCommand extends Command
 
 
     /**
-     * @inheritDocs
+     * @ignore
      */
     static get className()
     {
@@ -56,7 +57,7 @@ class SassCommand extends Command
 
 
     /**
-     * @inheritDocs
+     * @ignore
      */
     get help()
     {
@@ -90,7 +91,10 @@ class SassCommand extends Command
 
 
     /**
-     * @inheritDocs
+     * Compiles sass files
+     *
+     * @protected
+     * @param {Object} parameters
      * @returns {Promise}
      */
     compile(parameters)
@@ -121,7 +125,11 @@ class SassCommand extends Command
 
 
     /**
-     * @inheritDocs
+     * Uses watch.ModelSynchronizer to wait for changes on .sass files
+     * to compile them
+     *
+     * @protected
+     * @param {Object} parameters
      * @returns {Promise}
      */
     watch(parameters)
@@ -147,8 +155,7 @@ class SassCommand extends Command
 
 
     /**
-     * @inheritDocs
-     * @returns {Promise<Server>}
+     * @ignore
      */
     dispatch(action, parameters)
     {
