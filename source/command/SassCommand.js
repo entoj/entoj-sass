@@ -18,7 +18,11 @@ const co = require('co');
 
 
 /**
- * @memberOf sass.command
+ * Allows to compile or watch sass files
+ *
+ * @class
+ * @extends command.Command
+ * @memberOf command
  */
 class SassCommand extends Command
 {
@@ -47,7 +51,7 @@ class SassCommand extends Command
      */
     static get className()
     {
-        return 'sass.command/SassCommand';
+        return 'command/SassCommand';
     }
 
 

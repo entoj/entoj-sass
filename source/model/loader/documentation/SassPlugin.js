@@ -32,7 +32,7 @@ class SassPlugin extends ParserPlugin
      */
     static get injections()
     {
-        return { 'parameters': [PathesConfiguration, 'sass.model.loader.documentation/SassPlugin.options'] };
+        return { 'parameters': [PathesConfiguration, 'model.loader.documentation/SassPlugin.options'] };
     }
 
 
@@ -41,7 +41,7 @@ class SassPlugin extends ParserPlugin
      */
     static get className()
     {
-        return 'sass.model.loader.documentation/SassPlugin';
+        return 'model.loader.documentation/SassPlugin';
     }
 }
 

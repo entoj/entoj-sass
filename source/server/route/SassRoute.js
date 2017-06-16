@@ -13,7 +13,7 @@ const assertParameter = require('entoj-system').utils.assert.assertParameter;
 /**
  * A route to serve compiled sass files
  *
- * @memberOf sass.server.routes
+ * @memberOf server.route
  */
 class SassRoute extends Route
 {
@@ -46,7 +46,7 @@ class SassRoute extends Route
      */
     static get className()
     {
-        return 'sass.server.route/SassRoute';
+        return 'server.route/SassRoute';
     }
 
 

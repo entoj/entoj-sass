@@ -27,5 +27,5 @@ describe(SassFileParser.className, function()
     /**
      * FileLinter Test
      */
-    fileParserSpec(SassFileParser, 'sass.parser.documentation/SassFileParser', fixture);
+    fileParserSpec(SassFileParser, 'parser.documentation/SassFileParser', fixture);
 });

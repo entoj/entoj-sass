@@ -1,5 +1,5 @@
 /**
- * @namespace sass.command
+ * @namespace command
  */
 module.exports =
 {

@@ -17,7 +17,7 @@ describe(SassRoute.className, function()
     /**
      * Route Test
      */
-    routeSpec(SassRoute, 'sass.server.route/SassRoute', function(parameters)
+    routeSpec(SassRoute, 'server.route/SassRoute', function(parameters)
     {
         const pathesConfiguration = new PathesConfiguration();
         const cliLogger = new CliLogger('', { muted: true });

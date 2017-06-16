@@ -13,7 +13,7 @@ describe(SassParser.className, function()
     /**
      * Parser Test
      */
-    parserSpec(SassParser, 'sass.parser.documentation/SassParser');
+    parserSpec(SassParser, 'parser.documentation/SassParser');
 
 
     /**

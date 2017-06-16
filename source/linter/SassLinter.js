@@ -9,11 +9,11 @@ const sassLint = require('sass-lint');
 
 
 /**
- * A sass linter
+ * A sass linter based on sass-lint
  *
  * @class
  * @extends linter.Linter
- * @memberOf sass.linter
+ * @memberOf linter
  */
 class SassLinter extends Linter
 {
@@ -26,7 +26,7 @@ class SassLinter extends Linter
         super();
 
         const opts = options || {};
-        this._rules = rules || {};
+        const ruleMap = rules || {};
         this._options =
         {
             options:
@@ -34,9 +34,9 @@ class SassLinter extends Linter
                 'merge-default-rules': opts.useDefaultRules || false
             }
         };
-        if (Object.keys(this._rules).length)
+        if (Object.keys(ruleMap).length)
         {
-            this._options.rules = this._rules;
+            this._options.rules = ruleMap;
             this._options.options['merge-default-rules'] = false;
         }
     }
@@ -47,7 +47,7 @@ class SassLinter extends Linter
      */
     static get injections()
     {
-        return { 'parameters': ['sass.linter/SassLinter.rules', 'sass.linter/SassLinter.options'] };
+        return { 'parameters': ['linter/SassLinter.rules', 'linter/SassLinter.options'] };
     }
 
 
@@ -56,7 +56,7 @@ class SassLinter extends Linter
      */
     static get className()
     {
-        return 'sass.linter/SassLinter';
+        return 'linter/SassLinter';
     }
 
 

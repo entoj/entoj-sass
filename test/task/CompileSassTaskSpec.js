@@ -23,7 +23,7 @@ describe(CompileSassTask.className, function()
     /**
      * Task Test
      */
-    taskSpec(CompileSassTask, 'sass.task/CompileSassTask', prepareParameters);
+    taskSpec(CompileSassTask, 'task/CompileSassTask', prepareParameters);
 
     /**
      */

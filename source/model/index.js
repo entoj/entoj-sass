@@ -1,5 +1,5 @@
 /**
- * @namespace sass.model
+ * @namespace model
  */
 module.exports =
 {

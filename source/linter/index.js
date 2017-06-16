@@ -1,5 +1,5 @@
 /**
- * @namespace sass.linter
+ * @namespace linter
  */
 module.exports =
 {

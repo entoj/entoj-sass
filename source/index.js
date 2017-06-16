@@ -1,6 +1,3 @@
-/**
- * @namespace sass
- */
 module.exports =
 {
     command: require('./command/index.js'),

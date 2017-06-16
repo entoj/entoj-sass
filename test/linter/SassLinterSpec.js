@@ -25,5 +25,5 @@ describe(SassLinter.className, function()
     /**
      * BaseLinter Test
      */
-    linterSpec(SassLinter, 'sass.linter/SassLinter', fixture);
+    linterSpec(SassLinter, 'linter/SassLinter', fixture);
 });

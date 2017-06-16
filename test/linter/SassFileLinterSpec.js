@@ -27,5 +27,5 @@ describe(SassFileLinter.className, function()
     /**
      * FileLinter Test
      */
-    fileLinterSpec(SassFileLinter, 'sass.linter/SassFileLinter', fixture);
+    fileLinterSpec(SassFileLinter, 'linter/SassFileLinter', fixture);
 });

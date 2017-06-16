@@ -18,7 +18,7 @@ const doiuse = require('doiuse');
 
 /**
  * @memberOf task
- * @extends task.SimpleTask
+ * @extends task.TransformingTask
  */
 class PostProcessSassTask extends TransformingTask
 {
@@ -36,7 +36,7 @@ class PostProcessSassTask extends TransformingTask
      */
     static get className()
     {
-        return 'sass.task/PostProcessSassTask';
+        return 'task/PostProcessSassTask';
     }
 
 

@@ -23,7 +23,7 @@ const templateString = require('es6-template-strings');
 
 
 /**
- * @memberOf sass.task
+ * @memberOf task
  */
 class CompileSassTask extends Task
 {
@@ -61,7 +61,7 @@ class CompileSassTask extends Task
      */
     static get className()
     {
-        return 'sass.task/CompileSassTask';
+        return 'task/CompileSassTask';
     }
 
 

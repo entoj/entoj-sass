@@ -15,7 +15,7 @@ const ContentKind = require('entoj-system').model.ContentKind;
  *
  * @class
  * @extends parser.FileParser
- * @memberOf sass.parser.documentation
+ * @memberOf parser.documentation
  */
 class SassFileParser extends FileParser
 {
@@ -39,7 +39,7 @@ class SassFileParser extends FileParser
      */
     static get className()
     {
-        return 'sass.parser.documentation/SassFileParser';
+        return 'parser.documentation/SassFileParser';
     }
 }
 

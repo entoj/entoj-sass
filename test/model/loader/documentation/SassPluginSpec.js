@@ -17,7 +17,7 @@ describe(SassPlugin.className, function()
     /**
      * LoaderPlugin Test
      */
-    loaderPluginSpec(SassPlugin, 'sass.model.loader.documentation/SassPlugin', function(params)
+    loaderPluginSpec(SassPlugin, 'model.loader.documentation/SassPlugin', function(params)
     {
         params.unshift(global.fixtures.pathesConfiguration);
         return params;

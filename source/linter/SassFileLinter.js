@@ -13,7 +13,8 @@ const SassLinter = require('./SassLinter.js').SassLinter;
  *
  * @class
  * @extends linter.Linter
- * @memberOf sass.linter
+ * @memberOf linter
+ * @see linter.SassLinter
  */
 class SassFileLinter extends FileLinter
 {
@@ -34,7 +35,7 @@ class SassFileLinter extends FileLinter
      */
     static get injections()
     {
-        return { 'parameters': ['sass.linter/SassFileLinter.rules', 'sass.linter/SassFileLinter.options'] };
+        return { 'parameters': ['linter/SassFileLinter.rules', 'linter/SassFileLinter.options'] };
     }
 
 
@@ -43,7 +44,7 @@ class SassFileLinter extends FileLinter
      */
     static get className()
     {
-        return 'sass.linter/SassFileLinter';
+        return 'linter/SassFileLinter';
     }
 }
 

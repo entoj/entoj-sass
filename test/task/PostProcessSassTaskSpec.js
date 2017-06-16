@@ -20,7 +20,7 @@ describe(PostProcessSassTask.className, function()
     /**
      * Task Test
      */
-    taskSpec(PostProcessSassTask, 'sass.task/PostProcessSassTask', function(parameters)
+    taskSpec(PostProcessSassTask, 'task/PostProcessSassTask', function(parameters)
     {
         const cliLogger = new CliLogger();
         cliLogger.muted = true;

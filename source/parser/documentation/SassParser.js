@@ -23,7 +23,7 @@ const gonzales = require('gonzales-pe');
  *
  * @class
  * @extends parser.Parser
- * @memberOf sass.parser.documentation
+ * @memberOf parser.documentation
  */
 class SassParser extends Parser
 {
@@ -42,7 +42,7 @@ class SassParser extends Parser
      */
     static get className()
     {
-        return 'sass.parser.documentation/SassParser';
+        return 'parser.documentation/SassParser';
     }
 
 

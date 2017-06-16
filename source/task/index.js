@@ -1,5 +1,5 @@
 /**
- * @namespace sass.task
+ * @namespace task
  */
 module.exports =
 {

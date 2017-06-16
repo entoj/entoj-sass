@@ -1,5 +1,5 @@
 /**
- * @namespace sass.parser
+ * @namespace parser
  */
 module.exports =
 {
