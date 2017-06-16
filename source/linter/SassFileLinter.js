@@ -12,14 +12,17 @@ const SassLinter = require('./SassLinter.js').SassLinter;
  * A sass file linter
  *
  * @class
- * @extends linter.Linter
+ * @extends external:linter.Linter
  * @memberOf linter
  * @see linter.SassLinter
+ * @see https://github.com/sasstools/sass-lint/tree/master/docs/rules
  */
 class SassFileLinter extends FileLinter
 {
     /**
+     * @param {Object} rules - A object describing all linting rules
      * @param {Object} options
+     * @param {Boolean} options.useDefaultRules - When true the linter uses rules from .sass-lint.yml
      */
     constructor(rules, options)
     {
@@ -31,7 +34,7 @@ class SassFileLinter extends FileLinter
 
 
     /**
-     * @inheritDoc
+     * @inheritDocs
      */
     static get injections()
     {
@@ -40,7 +43,7 @@ class SassFileLinter extends FileLinter
 
 
     /**
-     * @inheritDoc
+     * @inheritDocs
      */
     static get className()
     {

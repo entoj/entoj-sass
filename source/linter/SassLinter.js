@@ -12,14 +12,16 @@ const sassLint = require('sass-lint');
  * A sass linter based on sass-lint
  *
  * @class
- * @extends linter.Linter
+ * @extends external:linter.Linter
  * @memberOf linter
+ * @see https://github.com/sasstools/sass-lint/tree/master/docs/rules
  */
 class SassLinter extends Linter
 {
     /**
-     * @param {Object} rules
+     * @param {Object} rules - A object describing all linting rules
      * @param {Object} options
+     * @param {Boolean} options.useDefaultRules - When true the linter uses rules from .sass-lint.yml
      */
     constructor(rules, options)
     {
@@ -61,8 +63,9 @@ class SassLinter extends Linter
 
 
     /**
-     * @param {string} content
-     * @param {string} options
+     * @param {String} content - The source that will be linted
+     * @param {Object} options
+     * @param {String} options.filename - The filename if source comes from a file
      * @returns {Promise<Array>}
      */
     lint(content, options)
