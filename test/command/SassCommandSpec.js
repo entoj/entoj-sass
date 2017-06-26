@@ -141,4 +141,46 @@ describe(SassCommand.className, function()
             return promise;
         });
     });
+
+
+    describe('#watch()', function()
+    {
+        it('should return a promise', function()
+        {
+            const testee = createTestee();
+            const promise = testee.watch();
+            expect(promise).to.be.instanceof(Promise);
+            return promise;
+        });
+
+        it('should initially build bundles', function()
+        {
+            const promise = co(function *()
+            {
+                yield fs.emptyDir(path.join(SASS_FIXTURES, '/temp'));
+                const testee = createTestee();
+                yield testee.watch();
+                expect(yield fs.exists(path.join(SASS_FIXTURES, '/temp/sass/bundles/base/css/common.css'))).to.be.ok;
+                expect(yield fs.exists(path.join(SASS_FIXTURES, '/temp/sass/bundles/base/css/core.css'))).to.be.ok;
+                expect(yield fs.exists(path.join(SASS_FIXTURES, '/temp/sass/bundles/extended/css/common.css'))).to.be.ok;
+                expect(yield fs.exists(path.join(SASS_FIXTURES, '/temp/sass/bundles/extended/css/core.css'))).to.be.ok;
+            });
+            return promise;
+        });
+
+        it('should allow to pass a query for entities', function()
+        {
+            const promise = co(function *()
+            {
+                yield fs.emptyDir(path.join(SASS_FIXTURES, '/temp'));
+                const testee = createTestee();
+                yield testee.watch({ _:['base'] });
+                expect(yield fs.exists(path.join(SASS_FIXTURES, '/temp/sass/bundles/base/css/common.css'))).to.be.ok;
+                expect(yield fs.exists(path.join(SASS_FIXTURES, '/temp/sass/bundles/base/css/core.css'))).to.be.ok;
+                expect(yield fs.exists(path.join(SASS_FIXTURES, '/temp/sass/bundles/extended/css/common.css'))).to.be.not.ok;
+                expect(yield fs.exists(path.join(SASS_FIXTURES, '/temp/sass/bundles/extended/css/core.css'))).to.be.not.ok;
+            });
+            return promise;
+        });
+    });
 });

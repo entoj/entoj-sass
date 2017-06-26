@@ -161,7 +161,7 @@ class SassCommand extends Command
         {
             const logger = scope.createLogger('command.sass.watch');
             const modelSynchronizer = scope.context.di.create(ModelSynchronizer);
-            yield scope.compile(parameters);
+            yield scope.bundle(parameters);
             yield modelSynchronizer.start();
             modelSynchronizer.signals.invalidated.add((synchronizer, invalidations) =>
             {
