@@ -5,6 +5,7 @@
  * @ignore
  */
 const Command = require('entoj-system').command.Command;
+const SassConfiguration = require('../configuration/SassConfiguration.js').SassConfiguration;
 const CompileSassTask = require('../task/CompileSassTask.js').CompileSassTask;
 const PostProcessSassTask = require('../task/PostProcessSassTask.js').PostProcessSassTask;
 const WriteFilesTask = require('entoj-system').task.WriteFilesTask;
@@ -15,6 +16,7 @@ const ModelSynchronizer = require('entoj-system').watch.ModelSynchronizer;
 const CliLogger = require('entoj-system').cli.CliLogger;
 const Context = require('entoj-system').application.Context;
 const co = require('co');
+const gitRev = require('git-rev-promises');
 
 
 /**
@@ -64,19 +66,28 @@ class SassCommand extends Command
         const help =
         {
             name: this._name,
-            description: 'Compiles and optimizes css files',
+            description: 'Compiles scss files into bundles',
             actions:
             [
                 {
-                    name: 'compile [query]',
+                    name: 'bundle',
                     description: 'Compiles all scss files',
                     options:
                     [
                         {
                             name: 'query',
-                            type: 'optional',
+                            type: 'inline',
+                            optional: true,
                             defaultValue: '*',
-                            description: 'Compiles scss for the given site'
+                            description: 'Query for sites to use e.g. /base'
+                        },
+                        {
+                            name: 'destination',
+                            type: 'named',
+                            value: 'path',
+                            optional: true,
+                            defaultValue: '',
+                            description: 'Define a base folder where css files are written to'
                         }
                     ]
                 },
@@ -91,13 +102,13 @@ class SassCommand extends Command
 
 
     /**
-     * Compiles sass files
+     * Compiles sass files into configured bundles
      *
      * @protected
      * @param {Object} parameters
      * @returns {Promise}
      */
-    compile(parameters)
+    bundle(parameters)
     {
         const scope = this;
         const promise = co(function *()
@@ -105,12 +116,23 @@ class SassCommand extends Command
             const logger = scope.createLogger('command.sass.compile');
             const pathesConfiguration = scope.context.di.create(PathesConfiguration);
             const buildConfiguration = scope.context.di.create(BuildConfiguration);
-            const path = yield pathesConfiguration.resolveCache('/css');
+            const sassConfiguration = scope.context.di.create(SassConfiguration);
+            let prepend = false;
+            if (buildConfiguration.get('sass.banner', false))
+            {
+                prepend = '/** ' + buildConfiguration.get('sass.banner', false) + ' **/';
+            }
             const options =
             {
-                query: parameters && parameters._[0] || '*',
-                writePath: path,
-                decoratePrepend: '/** generated ' + (new Date()) + ' **/\n'
+                query: parameters && parameters._ && parameters._[0] || '*',
+                writePath: yield pathesConfiguration.resolve((parameters && parameters.destination) || sassConfiguration.bundlePath),
+                decoratePrepend: prepend,
+                decorateVariables:
+                {
+                    date: new Date(),
+                    gitHash: yield gitRev.long(),
+                    gitBranch: yield gitRev.branch()
+                }
             };
             const mapping = new Map();
             mapping.set(CliLogger, logger);
@@ -163,7 +185,7 @@ class SassCommand extends Command
         {
             return this.watch(parameters);
         }
-        return this.compile(parameters);
+        return this.bundle(parameters);
     }
 }
 

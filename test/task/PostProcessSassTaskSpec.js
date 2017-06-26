@@ -139,7 +139,7 @@ describe(PostProcessSassTask.className, function()
 
         it('should apply cssnano to all files when build configuration minimize == true', function()
         {
-            return testPostCSSPlugins({ minimize: true }, ['cssnano-core']);
+            return testPostCSSPlugins({ minify: true }, ['cssnano-core']);
         });
 
         it('should inline source maps in all files when build configuration sourceMaps == true', function()

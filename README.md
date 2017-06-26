@@ -32,6 +32,22 @@ Lints all source files
 npm run lint
 ```
 
+# Configuration
+
+## Global configuration
+
+sass.compilePath: ${cache}/sass/compile
+
+
+## Environment configuration
+
+sass.browsers: ['ie >= 9', '> 2%']
+sass.sourceMaps; false
+sass.optimize: false
+sass.minify: false
+sass.check: false
+sass.urlRewrite: false
+
 ---
 
 ### Licence

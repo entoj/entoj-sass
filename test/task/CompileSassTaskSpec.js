@@ -5,6 +5,7 @@
  */
 const CompileSassTask = require(SASS_SOURCE + '/task/CompileSassTask.js').CompileSassTask;
 const SassPlugin = require(SASS_SOURCE + '/model/loader/documentation/SassPlugin.js').SassPlugin;
+const SassConfiguration = require(SASS_SOURCE + '/configuration/SassConfiguration.js').SassConfiguration;
 const CliLogger = require('entoj-system').cli.CliLogger;
 const taskSpec = require('entoj-system/test').task.TaskShared;
 const pathes = require('entoj-system').utils.pathes;
@@ -29,7 +30,8 @@ describe(CompileSassTask.className, function()
      */
     function prepareParameters(parameters)
     {
-        parameters.unshift({ includePath: global.fixtures.pathToLibraries + '/sass' });
+        parameters.unshift({ includePathes: global.fixtures.pathToLibraries + '/sass' });
+        parameters.unshift(new SassConfiguration(global.fixtures.globalConfiguration));
         parameters.unshift(global.fixtures.pathesConfiguration);
         parameters.unshift(global.fixtures.sitesRepository);
         parameters.unshift(global.fixtures.filesRepository);
@@ -242,6 +244,7 @@ describe(CompileSassTask.className, function()
             {
                 const testee = createTestee();
                 const data = yield taskSpec.readStream(testee.compileFiles());
+                expect(data).to.have.length(4);
                 for (const file of data)
                 {
                     expect(file.contents.toString()).to.not.contain('@import \'');
@@ -258,6 +261,7 @@ describe(CompileSassTask.className, function()
             {
                 const testee = createTestee();
                 const data = yield taskSpec.readStream(testee.compileFiles(undefined, { filenameTemplate: '${site.name.urlify()}/${group}.scss' }));
+                expect(data).to.have.length(4);
                 for (const file of data)
                 {
                     expect(file.contents.toString()).to.not.contain('@import \'');
@@ -278,6 +282,7 @@ describe(CompileSassTask.className, function()
             {
                 const testee = createTestee();
                 const data = yield taskSpec.readStream(testee.stream());
+                expect(data).to.have.length(4);
                 for (const file of data)
                 {
                     expect(file.path).to.be.oneOf([normalize('base/css/common.css'), normalize('base/css/core.css'),

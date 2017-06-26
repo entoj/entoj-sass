@@ -17,6 +17,7 @@
     "sass-lint": "*",
     "gonzales-pe": "*",
     "co": "*",
+    "co-fs-extra": "*",
     "through2": "*",
     "vinyl": "*",
     "node-sass": "*",
@@ -28,7 +29,8 @@
     "cssnano": "*",
     "postcss-cssnext": "*",
     "postcss-urlrewrite": "*",
-    "doiuse": "*"
+    "doiuse": "*",
+    "git-rev-promises": "*"
   },
   "devDependencies": {
     "chai": "*",

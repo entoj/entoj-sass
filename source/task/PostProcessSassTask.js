@@ -45,7 +45,7 @@ class PostProcessSassTask extends TransformingTask
      */
     get sectionName()
     {
-        return 'Applying PostCSS';
+        return 'Post-processing CSS';
     }
 
 
@@ -60,7 +60,7 @@ class PostProcessSassTask extends TransformingTask
                 params.browsers = ['ie >= 9', '> 2%'];
                 params.sourceMaps = false;
                 params.optimize = false;
-                params.minimize = false;
+                params.minify = false;
                 params.check = false;
                 params.urlRewrite = false;
                 if (buildConfiguration)
@@ -68,7 +68,7 @@ class PostProcessSassTask extends TransformingTask
                     params.browsers = buildConfiguration.get('sass.browsers', params.browsers);
                     params.sourceMaps = buildConfiguration.get('sass.sourceMaps', params.sourceMaps);
                     params.optimize = buildConfiguration.get('sass.optimize', params.optimize);
-                    params.minimize = buildConfiguration.get('sass.minimize', params.minimize);
+                    params.minify = buildConfiguration.get('sass.minify', params.minify);
                     params.check = buildConfiguration.get('sass.check', params.check);
                     params.urlRewrite = buildConfiguration.get('sass.urlRewrite', params.urlRewrite);
                 }
@@ -92,12 +92,12 @@ class PostProcessSassTask extends TransformingTask
             /* istanbul ignore next */
             if (!file || !file.isNull)
             {
-                scope._cliLogger.info('Invalid file <' + file + '>');
+                scope.cliLogger.info('Invalid file <' + file + '>');
                 return false;
             }
 
             // Start
-            const work = scope._cliLogger.work('Processing file <' + file.path + '>');
+            const work = scope.cliLogger.work('Processing file <' + file.path + '>');
 
             // Add needed plugins
             const plugins = [];
@@ -129,7 +129,7 @@ class PostProcessSassTask extends TransformingTask
             {
                 plugins.push(mqpacker());
             }
-            if (params.minimize === true)
+            if (params.minify === true)
             {
                 plugins.push(cssnano());
             }
@@ -156,11 +156,11 @@ class PostProcessSassTask extends TransformingTask
             catch(e)
             {
                 /* istanbul ignore next */
-                scope._cliLogger.error(e);
+                scope.cliLogger.error(e);
             }
 
             // Done
-            scope._cliLogger.end(work);
+            scope.cliLogger.end(work);
             return resultFile;
         });
         return promise;

@@ -7,6 +7,8 @@
 const Route = require('entoj-system').server.route.Route;
 const CliLogger = require('entoj-system').cli.CliLogger;
 const PathesConfiguration = require('entoj-system').model.configuration.PathesConfiguration;
+const SassConfiguration = require('../../configuration/SassConfiguration.js').SassConfiguration;
+const waitForPromise = require('entoj-system').utils.synchronize.waitForPromise;
 const assertParameter = require('entoj-system').utils.assert.assertParameter;
 
 
@@ -20,15 +22,16 @@ class SassRoute extends Route
     /**
      * @param {cli.CliLogger} cliLogger
      */
-    constructor(cliLogger, pathesConfiguration)
+    constructor(cliLogger, pathesConfiguration, sassConfiguration)
     {
         super(cliLogger.createPrefixed('route.sassroute'));
 
         //Check params
         assertParameter(this, 'pathesConfiguration', pathesConfiguration, true, PathesConfiguration);
+        assertParameter(this, 'sassConfiguration', sassConfiguration, true, SassConfiguration);
 
         // Assign options
-        this._pathesConfiguration = pathesConfiguration;
+        this._basePath = waitForPromise(pathesConfiguration.resolve(sassConfiguration.compilePath));
     }
 
 
@@ -37,7 +40,7 @@ class SassRoute extends Route
      */
     static get injections()
     {
-        return { 'parameters': [CliLogger, PathesConfiguration] };
+        return { 'parameters': [CliLogger, PathesConfiguration, SassConfiguration] };
     }
 
 
@@ -51,11 +54,11 @@ class SassRoute extends Route
 
 
     /**
-     * @type {model.configuration.PathesConfiguration}
+     * @type {String}
      */
-    get pathesConfiguration()
+    get basePath()
     {
-        return this._pathesConfiguration;
+        return this._basePath;
     }
 
 
@@ -64,13 +67,12 @@ class SassRoute extends Route
      */
     register(express)
     {
-        super.register(express);
-        this.pathesConfiguration.resolveCache('/css')
-            .then((path) =>
-            {
-                this.addStaticFileHandler('*', path, ['.css']);
-            }
-        );
+        const promise = super.register(express);
+        promise.then(() =>
+        {
+            this.addStaticFileHandler('*', this.basePath, ['.css']);
+        });
+        return promise;
     }
 }
 

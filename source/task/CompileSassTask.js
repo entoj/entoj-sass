@@ -5,6 +5,7 @@
  * @ignore
  */
 const Task = require('entoj-system').task.Task;
+const SassConfiguration = require('../configuration/SassConfiguration.js').SassConfiguration;
 const FilesRepository = require('entoj-system').model.file.FilesRepository;
 const PathesConfiguration = require('entoj-system').model.configuration.PathesConfiguration;
 const SitesRepository = require('entoj-system').model.site.SitesRepository;
@@ -30,7 +31,7 @@ class CompileSassTask extends Task
     /**
      *
      */
-    constructor(cliLogger, filesRepository, sitesRepository, pathesConfiguration, options)
+    constructor(cliLogger, filesRepository, sitesRepository, pathesConfiguration, sassConfiguration, options)
     {
         super(cliLogger);
 
@@ -38,11 +39,13 @@ class CompileSassTask extends Task
         assertParameter(this, 'filesRepository', filesRepository, true, FilesRepository);
         assertParameter(this, 'sitesRepository', sitesRepository, true, SitesRepository);
         assertParameter(this, 'pathesConfiguration', pathesConfiguration, true, PathesConfiguration);
+        assertParameter(this, 'sassConfiguration', sassConfiguration, true, SassConfiguration);
 
         // Assign options
         this._filesRepository = filesRepository;
         this._sitesRepository = sitesRepository;
         this._pathesConfiguration = pathesConfiguration;
+        this._sassConfiguration = sassConfiguration;
         this._options = options || {};
     }
 
@@ -52,7 +55,8 @@ class CompileSassTask extends Task
      */
     static get injections()
     {
-        return { 'parameters': [CliLogger, FilesRepository, SitesRepository, PathesConfiguration] };
+        return { 'parameters': [CliLogger, FilesRepository, SitesRepository,
+            PathesConfiguration, SassConfiguration, 'task/CompileSassTask.options'] };
     }
 
 
@@ -62,6 +66,15 @@ class CompileSassTask extends Task
     static get className()
     {
         return 'task/CompileSassTask';
+    }
+
+
+    /**
+     * @type configuration.SassConfiguration
+     */
+    get sassConfiguration()
+    {
+        return this._sassConfiguration;
     }
 
 
@@ -93,28 +106,43 @@ class CompileSassTask extends Task
 
 
     /**
+     * @type {Object}
+     */
+    get options()
+    {
+        return this._options;
+    }
+
+
+    /**
      * @inheritDocs
      */
     prepareParameters(buildConfiguration, parameters)
     {
-        const promise = super.prepareParameters(buildConfiguration, parameters)
-            .then((params) =>
+        const parent = super.prepareParameters(buildConfiguration, parameters);
+        const scope = this;
+        const promise = co(function*()
+        {
+            const params = yield parent;
+            params.query = params.query || '*';
+            params.filenameTemplate = params.filenameTemplate || '${site.name.urlify()}/css/${group}.scss';
+            if (params.includePathes)
             {
-                params.query = params.query || '*';
-                params.filenameTemplate = params.filenameTemplate || '${site.name.urlify()}/css/${group}.scss';
-                if (params.includePath)
+                params.includePathes = Array.isArray(params.includePathes)
+                    ? params.includePathes
+                    : [params.includePathes];
+            }
+            else
+            {
+                params.includePathes = [];
+                for (const path of scope.sassConfiguration.includePathes)
                 {
-                    params.includePath = Array.isArray(params.includePath)
-                        ? params.includePath
-                        : [params.includePath];
+                    const resolved = yield scope.pathesConfiguration.resolve(path);
+                    params.includePathes.push(resolved);
                 }
-                else
-                {
-                    params.includePath = [];
-                }
-
-                return params;
-            });
+            }
+            return params;
+        });
         return promise;
     }
 
@@ -226,15 +254,12 @@ class CompileSassTask extends Task
             // Prepare
             const params = yield scope.prepareParameters(buildConfiguration, parameters);
             const includePathes = [scope._pathesConfiguration.sites];
-            includePathes.push(...params.includePath);
-            if (scope.pathesConfiguration.bower)
+            includePathes.push(...params.includePathes);
+            if (scope.options.includePathes)
             {
-                includePathes.push(scope.pathesConfiguration.bower);
+                includePathes.push(scope.options.includePathes);
             }
-            if (scope._options.includePath)
-            {
-                includePathes.push(scope._options.includePath);
-            }
+
             const compiledFile = new VinylFile(
                 {
                     path: file.path ? file.path.replace(/\.scss/, '.css') : '',
