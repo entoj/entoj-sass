@@ -163,6 +163,7 @@ class SassCommand extends Command
             const modelSynchronizer = scope.context.di.create(ModelSynchronizer);
             yield scope.bundle(parameters);
             yield modelSynchronizer.start();
+            /* istanbul ignore next */
             modelSynchronizer.signals.invalidated.add((synchronizer, invalidations) =>
             {
                 if (invalidations.extensions.indexOf('.scss') > -1)
