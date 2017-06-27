@@ -270,6 +270,63 @@ describe(SassParser.className, function()
             });
             return promise;
         });
+
+        it('should parse functions with a valid docblock', function()
+        {
+            const testee = new SassParser();
+            const docblock = `
+            /**
+             * @function
+             */
+            @function one-two()
+            {
+            }
+
+            /**
+             * @param {string} $name
+             */
+            @function two($name:'none')
+            {
+            }
+            `;
+
+            const promise = testee.parse(docblock).then(function(documentation)
+            {
+                expect(documentation).to.have.length(2);
+                expect(documentation.find(doc => doc.name == 'one-two')).to.be.ok;
+                expect(documentation.find(doc => doc.name == 'two')).to.be.ok;
+                expect(documentation.find(doc => doc.name == 'two').parameters).to.have.length(1);
+            });
+            return promise;
+        });
+
+        it('should enhance infos from docblock with function infos', function()
+        {
+            const testee = new SassParser();
+            const docblock = `
+
+            /**
+             * @kind function
+             */
+            @function three(
+                $name: 'hey',
+                $id: 1)
+            {
+            }
+            `;
+
+            const promise = testee.parse(docblock).then(function(documentation)
+            {
+                expect(documentation).to.have.length(1);
+                expect(documentation.find(doc => doc.name == 'three')).to.be.ok;
+                expect(documentation.find(doc => doc.name == 'three').parameters).to.have.length(2);
+                expect(documentation.find(doc => doc.name == 'three').parameters[0].name).to.be.equal('$name');
+                //expect(documentation.find(doc => doc.name == 'three').parameters[0].defaultValue).to.be.equal("'hey'");
+                expect(documentation.find(doc => doc.name == 'three').parameters[1].name).to.be.equal('$id');
+                //expect(documentation.find(doc => doc.name == 'three').parameters[1].defaultValue).to.be.equal('1');
+            });
+            return promise;
+        });
     });
 
 

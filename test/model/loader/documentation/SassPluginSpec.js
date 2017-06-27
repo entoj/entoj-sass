@@ -33,28 +33,28 @@ describe(SassPlugin.className, function()
     });
 
 
-    xdescribe('#execute()', function()
+    describe('#execute()', function()
     {
-        it('should add all parsed files to files', function()
+        it('should add parsed files to files collection', function()
         {
-            const testee = new SassPlugin(fixtures.pathes);
-            const promise = testee.execute(fixtures.entityGallery).then(function()
+            const testee = new SassPlugin(global.fixtures.pathesConfiguration);
+            const promise = testee.execute(global.fixtures.entityTeaser).then(function()
             {
-                const files = fixtures.entityGallery.files;
+                const files = global.fixtures.entityTeaser.files;
                 expect(files.filter(file => file.contentType == ContentType.SASS)).to.have.length(1);
-                expect(files.find(file => file.basename == 'm001-gallery.scss')).to.be.ok;
+                expect(files.find(file => file.basename == 'm-teaser.scss')).to.be.ok;
             });
             return promise;
         });
 
         it('should add documentation for all parsed files', function()
         {
-            const testee = new SassPlugin(fixtures.pathes);
-            const promise = testee.execute(fixtures.entityGallery).then(function()
+            const testee = new SassPlugin(global.fixtures.pathesConfiguration);
+            const promise = testee.execute(global.fixtures.entityGlobal).then(function()
             {
-                const documentation = fixtures.entityGallery.documentation;
-                expect(documentation.filter(doc => doc.contentKind == ContentKind.CSS)).to.have.length(1);
-                expect(documentation.find(doc => doc.name == 'm001_gallery-button-size')).to.be.instanceof(DocumentationCallable);
+                const documentation = global.fixtures.entityGlobal.documentation;
+                expect(documentation.filter(doc => doc.contentKind == ContentKind.CSS)).to.have.length(11);
+                expect(documentation.find(doc => doc.name == 'maintain-aspect-ratio')).to.be.instanceof(DocumentationCallable);
             });
             return promise;
         });

@@ -51,6 +51,129 @@ class SassParser extends Parser
      * @param {string} options
      * @returns {Promise<Array>}
      */
+    parseNode(node, comment)
+    {
+        const scope = this;
+        const promise = co(function*()
+        {
+            // Prepare
+            const result = [];
+
+            // Parse
+            let currentComment = comment;
+            for (const token of node.content)
+            {
+                switch (token.type)
+                {
+                    case 'multilineComment':
+                        currentComment = '/*' + token.content + '*/';
+                        break;
+
+                    case 'declaration':
+                        if (currentComment)
+                        {
+                            const documentation = yield scope._parser.parse(currentComment, { contentType: ContentType.SASS });
+                            if (documentation instanceof DocumentationVariable)
+                            {
+                                documentation.contentType = ContentType.SASS;
+                                documentation.contentKind = ContentKind.CSS;
+
+                                const variableName = token.first('property').first('variable').first('ident').content;
+                                documentation.name = '$' + variableName;
+                                // @todo add value parsing
+                                result.push(documentation);
+                            }
+                            currentComment = false;
+                        }
+                        break;
+
+                    case 'ruleset':
+                        if (currentComment)
+                        {
+                            const selectors = token.content.filter(item => item.type == 'selector');
+                            for (const selector of selectors)
+                            {
+                                const documentation = yield scope._parser.parse(currentComment, { contentType: ContentType.SASS });
+                                if (documentation instanceof DocumentationClass)
+                                {
+                                    const className = selector.first('class').first('ident').content;
+                                    // @todo check other selectors
+                                    documentation.name = '.' + className;
+                                    documentation.contentType = ContentType.SASS;
+                                    documentation.contentKind = ContentKind.CSS;
+                                    result.push(documentation);
+                                }
+                            }
+                            currentComment = false;
+                        }
+                        break;
+
+                    case 'mixin':
+                    case 'function':
+                        if (currentComment)
+                        {
+                            const documentation = yield scope._parser.parse(currentComment, { contentType: ContentType.SASS });
+                            if (documentation instanceof DocumentationCallable)
+                            {
+                                const mixinName = token.first('ident').content;
+                                documentation.contentType = ContentType.SASS;
+                                documentation.contentKind = ContentKind.CSS;
+                                documentation.name = mixinName;
+                                const args = token.content.find(item => item.type === 'arguments');
+                                if (args)
+                                {
+                                    const types = ['variable'];
+                                    args.traverseByTypes(types, function(node, index, parent)
+                                    {
+                                        const name = '$' + node.first('ident').content;
+                                        if (!documentation.parameters.find(item => item.name === name))
+                                        {
+                                            const parameter = new DocumentationParameter();
+                                            parameter.name = name;
+                                            documentation.parameters.push(parameter);
+                                        }
+                                    });
+                                }
+                                result.push(documentation);
+                            }
+                            currentComment = false;
+                        }
+                        break;
+
+                    case 'space':
+                        break;
+
+                    case 'declarationDelimiter':
+                        currentComment = false;
+                        break;
+
+                    case 'atrule':
+                        const childResult = yield scope.parseNode(token, currentComment);
+                        result.push(...childResult);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            return result;
+        })
+        .catch(function(e)
+        {
+            scope.logger.error(e);
+            throw new Error('SassParser::parseNode - ' + e);
+        });
+
+        return promise;
+    }
+
+
+    /**
+     * @param {string} content
+     * @param {string} options
+     * @returns {Promise<Array>}
+     */
     parse(content, options)
     {
         if (!content || content.trim() === '')
@@ -62,116 +185,32 @@ class SassParser extends Parser
         const promise = co(function*()
         {
             // Prepare
-            const result = [];
             const contents = trimMultiline(content);
-            let ast;
 
             // Get ast
+            let ast;
             try
             {
                 ast = gonzales.parse(contents, { syntax: 'scss' });
             }
             catch(e)
             {
+                scope.logger.error(e);
                 ast = false;
             }
             if (!ast)
             {
-                return result;
+                return [];
             }
 
             // Parse
-            let comment = false;
-            for (const token of ast.content)
-            {
-                switch (token.type)
-                {
-                    case 'multilineComment':
-                        comment = '/*' + token.content + '*/';
-                        break;
-
-                    case 'declaration':
-                        if (comment)
-                        {
-                            const documentation = yield scope._parser.parse(comment, { contentType: ContentType.SASS });
-                            if (documentation instanceof DocumentationVariable)
-                            {
-                                documentation.contentType = ContentType.SASS;
-                                documentation.contentKind = ContentKind.CSS;
-
-                                const variableName = token.first('property').first('variable').first('ident').content;
-                                documentation.name = '$' + variableName;
-                                // @todo add value parsing
-                                result.push(documentation);
-                            }
-                        }
-                        break;
-
-                    case 'ruleset':
-                        if (comment)
-                        {
-                            const selectors = token.content.filter(item => item.type == 'selector');
-                            for (const selector of selectors)
-                            {
-                                const documentation = yield scope._parser.parse(comment, { contentType: ContentType.SASS });
-                                if (documentation instanceof DocumentationClass)
-                                {
-                                    const className = selector.first('class').first('ident').content;
-                                    // @todo check other selectors
-                                    documentation.name = '.' + className;
-                                    documentation.contentType = ContentType.SASS;
-                                    documentation.contentKind = ContentKind.CSS;
-                                    result.push(documentation);
-                                }
-                            }
-                        }
-                        break;
-
-                    case 'mixin':
-                        if (comment)
-                        {
-                            const documentation = yield scope._parser.parse(comment, { contentType: ContentType.SASS });
-                            if (documentation instanceof DocumentationCallable)
-                            {
-                                const mixinName = token.first('ident').content;
-                                documentation.contentType = ContentType.SASS;
-                                documentation.contentKind = ContentKind.CSS;
-                                documentation.name = mixinName;
-                                const args = token.content.find(item => item.type === 'arguments');
-                                const types = ['variable'];
-                                args.traverseByTypes(types, function(node, index, parent)
-                                {
-                                    const name = '$' + node.first('ident').content;
-                                    if (!documentation.parameters.find(item => item.name === name))
-                                    {
-                                        const parameter = new DocumentationParameter();
-                                        parameter.name = name;
-                                        documentation.parameters.push(parameter);
-                                    }
-                                });
-                                result.push(documentation);
-                            }
-                        }
-                        break;
-
-                    case 'space':
-                        break;
-
-                    case 'declarationDelimiter':
-                        comment = false;
-                        break;
-
-                    default:
-                        comment = false;
-                        break;
-                }
-            }
-
+            const result = yield scope.parseNode(ast);
             return result;
         })
-        .catch(function(error)
+        .catch(function(e)
         {
-            throw new Error('SassParser - ' + error);
+            scope.logger.error(e);
+            throw new Error('SassParser - ' + e);
         });
 
         return promise;
