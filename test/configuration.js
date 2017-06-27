@@ -8,7 +8,6 @@ global.SASS_SOURCE = path.resolve(__dirname + '/../source');
 global.SASS_FIXTURES = path.resolve(__dirname + '/__fixtures__');
 global.SASS_TEST = __dirname;
 
-
 /**
  * Configure chai
  */
