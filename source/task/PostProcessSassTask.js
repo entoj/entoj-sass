@@ -6,6 +6,7 @@
  */
 const TransformingTask = require('entoj-system').task.TransformingTask;
 const CliLogger = require('entoj-system').cli.CliLogger;
+const ErrorHandler = require('entoj-system').error.ErrorHandler;
 const VinylFile = require('vinyl');
 const co = require('co');
 const postcss = require('postcss');
@@ -162,7 +163,7 @@ class PostProcessSassTask extends TransformingTask
             // Done
             scope.cliLogger.end(work);
             return resultFile;
-        });
+        }).catch(ErrorHandler.handler(scope));
         return promise;
     }
 }

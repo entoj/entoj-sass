@@ -31,7 +31,7 @@ class SassRoute extends Route
         assertParameter(this, 'sassConfiguration', sassConfiguration, true, SassConfiguration);
 
         // Assign options
-        this._basePath = waitForPromise(pathesConfiguration.resolve(sassConfiguration.compilePath));
+        this._basePath = waitForPromise(pathesConfiguration.resolve(sassConfiguration.bundlePath));
     }
 
 

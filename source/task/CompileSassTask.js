@@ -12,6 +12,7 @@ const SitesRepository = require('entoj-system').model.site.SitesRepository;
 const ContentType = require('entoj-system').model.ContentType;
 const Site = require('entoj-system').model.site.Site;
 const CliLogger = require('entoj-system').cli.CliLogger;
+const ErrorHandler = require('entoj-system').error.ErrorHandler;
 const assertParameter = require('entoj-system').utils.assert.assertParameter;
 const pathes = require('entoj-system').utils.pathes;
 const urls = require('entoj-system').utils.urls;
@@ -142,7 +143,7 @@ class CompileSassTask extends Task
                 }
             }
             return params;
-        });
+        }).catch(ErrorHandler.handler(scope));
         return promise;
     }
 
@@ -227,8 +228,7 @@ class CompileSassTask extends Task
             // End
             scope.cliLogger.end(work);
             return files;
-        })
-        .catch(e => scope.logger.error(e));
+        }).catch(ErrorHandler.handler(scope));
         return promise;
     }
 
@@ -304,7 +304,7 @@ class CompileSassTask extends Task
             compiledFile.contents = new Buffer(compiled.css);
             scope.cliLogger.end(work);
             return compiledFile;
-        });
+        }).catch(ErrorHandler.handler(scope));
         return promise;
     }
 
@@ -333,8 +333,7 @@ class CompileSassTask extends Task
             }
             stream.end();
             scope.cliLogger.end(work);
-        })
-        .catch(e => scope.logger.error(e));
+        }).catch(ErrorHandler.handler(scope));
         return stream;
     }
 

@@ -13,6 +13,7 @@ const DocumentationCallable = require('entoj-system').model.documentation.Docume
 const DocumentationVariable = require('entoj-system').model.documentation.DocumentationVariable;
 const DocumentationClass = require('entoj-system').model.documentation.DocumentationClass;
 const DocumentationParameter = require('entoj-system').model.documentation.DocumentationParameter;
+const ErrorHandler = require('entoj-system').error.ErrorHandler;
 const trimMultiline = require('entoj-system').utils.string.trimMultiline;
 const co = require('co');
 const gonzales = require('gonzales-pe');
@@ -158,12 +159,7 @@ class SassParser extends Parser
             }
 
             return result;
-        })
-        .catch(function(e)
-        {
-            scope.logger.error(e);
-            throw new Error('SassParser::parseNode - ' + e);
-        });
+        }).catch(ErrorHandler.handler(scope));
 
         return promise;
     }
@@ -206,12 +202,7 @@ class SassParser extends Parser
             // Parse
             const result = yield scope.parseNode(ast);
             return result;
-        })
-        .catch(function(e)
-        {
-            scope.logger.error(e);
-            throw new Error('SassParser - ' + e);
-        });
+        }).catch(ErrorHandler.handler(scope));
 
         return promise;
     }

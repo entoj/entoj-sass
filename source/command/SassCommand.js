@@ -13,6 +13,7 @@ const DecorateTask = require('entoj-system').task.DecorateTask;
 const PathesConfiguration = require('entoj-system').model.configuration.PathesConfiguration;
 const BuildConfiguration = require('entoj-system').model.configuration.BuildConfiguration;
 const ModelSynchronizer = require('entoj-system').watch.ModelSynchronizer;
+const ErrorHandler = require('entoj-system').error.ErrorHandler;
 const CliLogger = require('entoj-system').cli.CliLogger;
 const Context = require('entoj-system').application.Context;
 const co = require('co');
@@ -141,7 +142,7 @@ class SassCommand extends Command
                 .pipe(scope.context.di.create(DecorateTask, mapping))
                 .pipe(scope.context.di.create(WriteFilesTask, mapping))
                 .run(buildConfiguration, options);
-        });
+        }).catch(ErrorHandler.handler(scope));
         return promise;
     }
 
@@ -172,7 +173,7 @@ class SassCommand extends Command
                     scope.compile(parameters);
                 }
             });
-        });
+        }).catch(ErrorHandler.handler(scope));
         return promise;
     }
 
