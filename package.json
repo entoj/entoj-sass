@@ -1,46 +1,45 @@
 {
-  "name": "entoj-sass",
-  "version": "0.1.0",
-  "private": true,
-  "engines": {
-    "node": "6.x"
-  },
-  "main": "source/index.js",
-  "scripts": {
-    "coverage": "bash scripts/test --coverage",
-    "coveralls": "bash scripts/coveralls",
-    "lint": "bash scripts/lint",
-    "test": "bash scripts/test"
-  },
-  "dependencies": {
-    "entoj-system": "https://github.com/entoj/entoj-system",
-    "sass-lint": "*",
-    "gonzales-pe": "*",
-    "co": "*",
-    "co-fs-extra": "*",
-    "through2": "*",
-    "vinyl": "*",
-    "node-sass": "*",
-    "es6-template-strings": "*",
-    "gulp-util": "*",
-    "gulp-sourcemaps": "*",
-    "postcss": "*",
-    "css-mqpacker": "*",
-    "cssnano": "*",
-    "postcss-cssnext": "*",
-    "postcss-urlrewrite": "*",
-    "doiuse": "*",
-    "git-rev-promises": "*"
-  },
-  "devDependencies": {
-    "chai": "*",
-    "coveralls": "*",
-    "git-changelog": "*",
-    "ink-docstrap": "*",
-    "istanbul": "*",
-    "jsdoc": "*",
-    "mocha": "*",
-    "sinon": "*",
-    "eslint": "*"
-  }
+    "name": "entoj-sass",
+    "version": "0.1.0",
+    "engines": {
+        "node": "6.x"
+    },
+    "main": "source/index.js",
+    "scripts": {
+        "coverage": "bash scripts/test --coverage",
+        "coveralls": "bash scripts/coveralls",
+        "lint": "bash scripts/lint",
+        "test": "bash scripts/test"
+    },
+    "dependencies": {
+        "co": "^4.6.0",
+        "co-fs-extra": "^1.2.1",
+        "css-mqpacker": "^6.0.1",
+        "cssnano": "^3.10.0",
+        "doiuse": "^3.0.0",
+        "entoj-system": "^0.1.1",
+        "es6-template-strings": "^2.0.1",
+        "git-rev-promises": "^1.0.8",
+        "gonzales-pe": "^4.0.3",
+        "gulp-sourcemaps": "^2.6.0",
+        "gulp-util": "^3.0.8",
+        "node-sass": "^4.5.3",
+        "postcss": "^6.0.5",
+        "postcss-cssnext": "^2.11.0",
+        "postcss-urlrewrite": "^0.2.1",
+        "sass-lint": "^1.10.2",
+        "through2": "^2.0.3",
+        "vinyl": "^2.1.0"
+    },
+    "devDependencies": {
+        "chai": "^4.0.2",
+        "coveralls": "^2.13.1",
+        "eslint": "^2.13.1",
+        "git-changelog": "^1.1.2",
+        "ink-docstrap": "^1.3.0",
+        "istanbul": "^0.4.5",
+        "jsdoc": "^3.4.3",
+        "mocha": "^3.4.2",
+        "sinon": "^2.3.6"
+    }
 }
