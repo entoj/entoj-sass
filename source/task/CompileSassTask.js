@@ -270,7 +270,9 @@ class CompileSassTask extends Task
                 data: file.contents.toString(),
                 includePaths: includePathes,
                 outputStyle: 'expanded',
-                sourceMap: buildConfiguration.get('sass.sourceMaps', false),
+                sourceMap: buildConfiguration
+                    ? buildConfiguration.get('sass.sourceMaps', false)
+                    : false,
                 sourceMapEmbed: true
             };
 
