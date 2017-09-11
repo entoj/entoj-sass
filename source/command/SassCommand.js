@@ -170,7 +170,7 @@ class SassCommand extends Command
                 if (invalidations.extensions.indexOf('.scss') > -1)
                 {
                     logger.info('Detected change in <Sass Files>');
-                    scope.compile(parameters);
+                    scope.bundle(parameters);
                 }
             });
         }).catch(ErrorHandler.handler(scope));
