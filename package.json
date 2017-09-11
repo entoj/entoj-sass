@@ -17,7 +17,7 @@
     "css-mqpacker": "^6.0.1",
     "cssnano": "^3.10.0",
     "doiuse": "^3.0.0",
-    "entoj-system": "^0.1.9",
+    "entoj-system": "^0.1.10",
     "es6-template-strings": "^2.0.1",
     "git-rev-promises": "^1.0.8",
     "gonzales-pe": "^4.0.3",
