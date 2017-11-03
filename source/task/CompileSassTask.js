@@ -10,7 +10,6 @@ const FilesRepository = require('entoj-system').model.file.FilesRepository;
 const PathesConfiguration = require('entoj-system').model.configuration.PathesConfiguration;
 const SitesRepository = require('entoj-system').model.site.SitesRepository;
 const ContentType = require('entoj-system').model.ContentType;
-const Site = require('entoj-system').model.site.Site;
 const CliLogger = require('entoj-system').cli.CliLogger;
 const ErrorHandler = require('entoj-system').error.ErrorHandler;
 const assertParameter = require('entoj-system').utils.assert.assertParameter;
