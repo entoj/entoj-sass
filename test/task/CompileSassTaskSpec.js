@@ -31,7 +31,7 @@ describe(CompileSassTask.className, function()
     function prepareParameters(parameters)
     {
         parameters.unshift({ includePathes: global.fixtures.pathToLibraries + '/sass' });
-        parameters.unshift(new SassConfiguration(global.fixtures.globalConfiguration));
+        parameters.unshift(new SassConfiguration(global.fixtures.globalConfiguration, global.fixtures.buildConfiguration));
         parameters.unshift(global.fixtures.pathesConfiguration);
         parameters.unshift(global.fixtures.sitesRepository);
         parameters.unshift(global.fixtures.filesRepository);
@@ -260,7 +260,7 @@ describe(CompileSassTask.className, function()
             const promise = co(function *()
             {
                 const testee = createTestee();
-                const data = yield taskSpec.readStream(testee.compileFiles(undefined, { filenameTemplate: '${site.name.urlify()}/${group}.scss' }));
+                const data = yield taskSpec.readStream(testee.compileFiles(undefined, { bundleTemplate: '${site.name.urlify()}/${group}.scss' }));
                 expect(data).to.have.length(4);
                 for (const file of data)
                 {

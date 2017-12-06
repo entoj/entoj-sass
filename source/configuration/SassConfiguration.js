@@ -5,6 +5,7 @@
  * @ignore
  */
 const Base = require('entoj-system').Base;
+const BuildConfiguration = require('entoj-system').model.configuration.BuildConfiguration;
 const GlobalConfiguration = require('entoj-system').model.configuration.GlobalConfiguration;
 const assertParameter = require('entoj-system').utils.assert.assertParameter;
 
@@ -17,16 +18,18 @@ class SassConfiguration extends Base
     /**
      * @param  {model.configuration.GlobalConfiguration} globalConfiguration
      */
-    constructor(globalConfiguration)
+    constructor(globalConfiguration, buildConfiguration)
     {
         super();
 
         //Check params
         assertParameter(this, 'globalConfiguration', globalConfiguration, true, GlobalConfiguration);
+        assertParameter(this, 'buildConfiguration', buildConfiguration, true, BuildConfiguration);
 
         // Create configuration
-        this._bundlePath = globalConfiguration.get('sass.bundlePath', '${cache}/sass/bundles');
-        this._includePathes = globalConfiguration.get('sass.includePathes', []);
+        this._bundlePath = buildConfiguration.get('sass.bundlePath', globalConfiguration.get('sass.bundlePath', '${cache}/sass/bundles'));
+        this._bundleTemplate = buildConfiguration.get('sass.bundleTemplate', globalConfiguration.get('sass.bundleTemplate', '${site.name.urlify()}/css/${group}.scss'));
+        this._includePathes = buildConfiguration.get('sass.includePathes', globalConfiguration.get('sass.includePathes', []));
     }
 
 
@@ -35,7 +38,7 @@ class SassConfiguration extends Base
      */
     static get injections()
     {
-        return { 'parameters': [GlobalConfiguration] };
+        return { 'parameters': [GlobalConfiguration, BuildConfiguration] };
     }
 
 
@@ -49,13 +52,26 @@ class SassConfiguration extends Base
 
 
     /**
-     * Path to a folder where compiled sass bundles are stored
+     * Path to a folder where compiled sass bundles are stored.
+     * Defaults to "${cache}/sass/bundles"
      *
      * @type {String}
      */
     get bundlePath()
     {
         return this._bundlePath;
+    }
+
+
+    /**
+     * Template for bundle filename generation.
+     * Defaults to "${site.name.urlify()}/css/${group}.scss"
+     *
+     * @type {String}
+     */
+    get bundleTemplate()
+    {
+        return this._bundleTemplate;
     }
 
 

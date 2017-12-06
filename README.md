@@ -32,21 +32,140 @@ Lints all source files
 npm run lint
 ```
 
-# Configuration
+## Features
 
-## Global configuration
+### Commands
 
-sass.compilePath: ${cache}/sass/compile
+#### SassCommand
+
+Provides cli integration for sass compiling
+
+##### Configuration
+
+```js
+configuration.commands.push(
+	{
+        type: require('entoj-sass').command.SassCommand
+    }	
+);
+```
 
 
-## Environment configuration
+### Linter
 
-sass.browsers: ['ie >= 9', '> 2%']
-sass.sourceMaps; false
-sass.optimize: false
-sass.minify: false
-sass.check: false
-sass.urlRewrite: false
+#### SassFileLinter
+
+Provides support for sass file linting for the LintCommand
+
+##### Configuration
+
+```js
+configuration.commands.push(
+    {
+        type: require('entoj-system').command.LintCommand,
+        '!linters':
+        [
+            {
+                type: require('entoj-sass').linter.SassFileLinter,
+                options:
+                {
+                    useDefaultRules: true
+                }
+            }
+        ]
+    }
+);
+```
+
+
+
+## Configuration
+
+### sass.includePathes
+
+**Default:** `[]`  
+**Type:** `Array`  
+**Global:** Yes  
+**Environment:** Yes  
+
+Pathes for sass files that are available to @include
+
+---
+
+### sass.bundlePath
+
+**Default:** `${cache}/sass/bundles`  
+**Type:** `String`  
+**Global:** Yes  
+**Environment:** Yes  
+
+Path for compiled css bundles
+
+---
+
+### sass.bundleTemplate
+
+**Default:** `${site.name.urlify()}/css/${group}.scss`  
+**Type:** `String`  
+**Global:** Yes  
+**Environment:** Yes  
+
+Template for generating css bundle filenames
+
+---
+
+### sass.browsers
+
+**Default:** `['ie >= 9', '> 2%']`  
+**Type:** `Array<String>`  
+**Global:** No  
+**Environment:** Yes  
+
+Sets the minimal supported Browsers versions. See [http://cssnext.io/usage/#browsers](http://cssnext.io/usage/#browsers)
+
+---
+
+### sass.sourceMaps
+
+**Default:** `false`  
+**Type:** `Boolean`  
+**Global:** No  
+**Environment:** Yes  
+
+Embeds source maps into compiled bundles
+
+---
+
+### sass.optimize
+
+**Default:** `false`  
+**Type:** `Boolean`  
+**Global:** No  
+**Environment:** Yes  
+
+Enables destructive css optimizations - use with care
+
+---
+
+### sass.minify
+
+**Default:** `false`  
+**Type:** `Boolean`  
+**Global:** No  
+**Environment:** Yes  
+
+Enables css minifications
+
+---
+
+### sass.urlRewrite
+
+**Default:** `false`  
+**Type:** `Array<String>`  
+**Global:** No  
+**Environment:** Yes  
+
+Allows to rewrite urls to make them fit the target environment. See [https://github.com/iAdramelk/postcss-urlrewrite](https://github.com/iAdramelk/postcss-urlrewrite)
 
 ---
 

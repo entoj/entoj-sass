@@ -125,7 +125,10 @@ class CompileSassTask extends Task
         {
             const params = yield parent;
             params.query = params.query || '*';
-            params.filenameTemplate = params.filenameTemplate || '${site.name.urlify()}/css/${group}.scss';
+            if (!params.bundleTemplate)
+            {
+                params.bundleTemplate = scope.sassConfiguration.bundleTemplate;
+            }
             if (params.includePathes)
             {
                 params.includePathes = Array.isArray(params.includePathes)
@@ -196,7 +199,7 @@ class CompileSassTask extends Task
                 // Create sass files
                 for (const group in sourceFiles)
                 {
-                    const filename = templateString(params.filenameTemplate, { site: site, group: group });
+                    const filename = templateString(params.bundleTemplate, { site: site, group: group });
                     const workGroup = scope.cliLogger.work('Generating <' + filename + '> for site <' + site.name + '> and group <' + group + '>');
 
                     let content = '';
