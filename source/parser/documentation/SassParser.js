@@ -202,7 +202,7 @@ class SassParser extends Parser
             // Parse
             const result = yield scope.parseNode(ast);
             return result;
-        }).catch(ErrorHandler.handler(scope));
+        });
 
         return promise;
     }
