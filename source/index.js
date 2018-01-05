@@ -9,7 +9,7 @@ function register(configuration, options)
         {
             sass:
             {
-                includePathes:['${entoj}/node_modules']
+                includePathes: ['${entoj}/node_modules']
             }
         });
 
