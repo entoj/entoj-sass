@@ -50,7 +50,6 @@ describe(PostProcessSassTask.className, function()
     });
 
 
-
     // Reduces a postcss plugin list to a simple array of names
     function preparePluginList(list)
     {
@@ -125,6 +124,11 @@ describe(PostProcessSassTask.className, function()
         it('should apply doiuse to all files when build configuration check == true', function()
         {
             return testPostCSSPlugins({ check: true }, ['doiuse']);
+        });
+
+        it('should apply rtl to all files when build configuration rtl == true', function()
+        {
+            return testPostCSSPlugins({ rtl: true }, ['postcss-rtl']);
         });
 
         it('should apply urlRewrite to all files when build configuration urlRewrite != false', function()

@@ -26,6 +26,7 @@
     "node-sass": "^4.7.2",
     "postcss": "^6.0.14",
     "postcss-cssnext": "^3.0.2",
+    "postcss-rtl": "^1.1.3",
     "postcss-urlrewrite": "^0.2.2",
     "sass-lint": "^1.12.1",
     "through2": "^2.0.3",

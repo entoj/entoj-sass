@@ -14,6 +14,7 @@ const mqpacker = require('css-mqpacker');
 const cssnano = require('cssnano');
 const cssnext = require('postcss-cssnext');
 const urlrewrite = require('postcss-urlrewrite');
+const rtl = require('postcss-rtl');
 const doiuse = require('doiuse');
 
 
@@ -63,6 +64,7 @@ class PostProcessSassTask extends TransformingTask
                 params.optimize = false;
                 params.minify = false;
                 params.check = false;
+                params.rtl = false;
                 params.urlRewrite = false;
                 if (buildConfiguration)
                 {
@@ -71,6 +73,7 @@ class PostProcessSassTask extends TransformingTask
                     params.optimize = buildConfiguration.get('sass.optimize', params.optimize);
                     params.minify = buildConfiguration.get('sass.minify', params.minify);
                     params.check = buildConfiguration.get('sass.check', params.check);
+                    params.rtl = buildConfiguration.get('sass.rtl', params.rtl);
                     params.urlRewrite = buildConfiguration.get('sass.urlRewrite', params.urlRewrite);
                 }
                 return params;
@@ -120,6 +123,10 @@ class PostProcessSassTask extends TransformingTask
                             scope.cliLogger.error(usageInfo.message);
                         }
                     }));
+            }
+            if (params.rtl === true)
+            {
+                plugins.push(rtl());
             }
             plugins.push(cssnext(
                 {
