@@ -40,6 +40,19 @@ function register(configuration, options)
             ]
         });
 
+    // Nunjucks filter
+    configuration.mappings.add(require('entoj-system').nunjucks.Environment,
+        {
+            '!filters':
+            [
+                configuration.clean(
+                    {
+                        type: require('./nunjucks/index.js').filter.CssUrlFilter
+                    })
+            ]
+        }
+    );
+
     // Routes
     configuration.commands.add(require('entoj-system').command.ServerCommand,
         {
