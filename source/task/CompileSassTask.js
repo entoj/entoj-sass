@@ -22,7 +22,6 @@ const sass = require('node-sass');
 const templateString = require('es6-template-strings');
 
 
-
 /**
  * @memberOf task
  */
@@ -194,7 +193,7 @@ class CompileSassTask extends Task
                 {
                     return file.contentType === ContentType.SASS && !file.basename.startsWith('_');
                 };
-                const sourceFiles = yield scope.filesRepository.getBySiteGrouped(site, filter, 'groups.css', 'common');
+                const sourceFiles = yield scope.filesRepository.getBySiteGrouped(site, filter, 'groups.css', scope.sassConfiguration.defaultGroup);
 
                 // Create sass files
                 for (const group in sourceFiles)

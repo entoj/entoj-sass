@@ -27,6 +27,8 @@ class SassConfiguration extends Base
         assertParameter(this, 'buildConfiguration', buildConfiguration, true, BuildConfiguration);
 
         // Create configuration
+        this._defaultGroup = buildConfiguration.get('sass.defaultGroup', globalConfiguration.get('sass.defaultGroup', 'common'));
+        this._bundleUrl = buildConfiguration.get('sass.bundleUrl', globalConfiguration.get('sass.bundleUrl', '/${site.name.urlify()}/css/${group}.css'));
         this._bundlePath = buildConfiguration.get('sass.bundlePath', globalConfiguration.get('sass.bundlePath', '${cache}/sass/bundles'));
         this._bundleTemplate = buildConfiguration.get('sass.bundleTemplate', globalConfiguration.get('sass.bundleTemplate', '${site.name.urlify()}/css/${group}.scss'));
         this._includePathes = buildConfiguration.get('sass.includePathes', globalConfiguration.get('sass.includePathes', []));
@@ -48,6 +50,30 @@ class SassConfiguration extends Base
     static get className()
     {
         return 'configuration/SassConfiguration';
+    }
+
+
+    /**
+     * The name of the default group used
+     * to name generated files
+     *
+     * @type {String}
+     */
+    get defaultGroup()
+    {
+        return this._defaultGroup;
+    }
+
+
+    /**
+     * Url to a compiled bundle
+     * Defaults to "/${site.name.urlify()}/css/${group}.css"
+     *
+     * @type {String}
+     */
+    get bundleUrl()
+    {
+        return this._bundleUrl;
     }
 
 
