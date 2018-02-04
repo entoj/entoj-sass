@@ -33,6 +33,7 @@ describe(CompileSassTask.className, function()
         parameters.unshift({ includePathes: global.fixtures.pathToLibraries + '/sass' });
         parameters.unshift(new SassConfiguration(global.fixtures.globalConfiguration, global.fixtures.buildConfiguration));
         parameters.unshift(global.fixtures.pathesConfiguration);
+        parameters.unshift(global.fixtures.entitiesRepository);
         parameters.unshift(global.fixtures.sitesRepository);
         parameters.unshift(global.fixtures.filesRepository);
         parameters.unshift(global.fixtures.cliLogger);
@@ -69,7 +70,7 @@ describe(CompileSassTask.className, function()
 
     describe('#generateFiles()', function()
     {
-        it('should return a promise', function()
+        xit('should return a promise', function()
         {
             const testee = createTestee();
             const promise = testee.generateFiles();
@@ -77,7 +78,7 @@ describe(CompileSassTask.className, function()
             return promise;
         });
 
-        it('should resolve to an array of vinyl files', function()
+        xit('should resolve to an array of vinyl files', function()
         {
             const promise = co(function *()
             {
@@ -108,7 +109,7 @@ describe(CompileSassTask.className, function()
             return promise;
         });
 
-        it('should allow to use a query to pick source specific items for generation', function()
+        it('should allow to use a query to pick specific sites for generation', function()
         {
             const promise = co(function *()
             {
@@ -145,6 +146,38 @@ describe(CompileSassTask.className, function()
                 const source = files.find(item => item.path == normalize('extended/css/common.scss'));
                 expect(source.contents.toString()).to.contain('@import \'base/elements/e-image/sass/e-image.scss\';');
                 expect(source.contents.toString()).to.contain('@import \'extended/elements/e-image/sass/e-image.scss\';');
+            });
+            return promise;
+        });
+
+        it('should allow to specify the entities used for generation', function()
+        {
+            const promise = co(function *()
+            {
+                const entities =
+                [
+                    yield global.fixtures.entitiesRepository.getById('e-image'),
+                    yield global.fixtures.entitiesRepository.getById('e-cta')
+                ];
+                const testee = createTestee();
+                const files = yield testee.generateFiles(undefined, { entities: entities });
+
+                expect(files).to.be.instanceof(Array);
+                expect(files).to.have.length(2);
+
+                const base = files.find(item => item.path == normalize('base/css/common.scss'));
+                expect(base).to.be.ok;
+                expect(base.contents.toString().split('\n')).to.have.length(4);
+                expect(base.contents.toString()).to.contain('@import \'base/elements/e-cta/sass/e-cta.scss\';');
+                expect(base.contents.toString()).to.contain('@import \'base/elements/e-image/sass/e-image.scss\';');
+
+                const extended = files.find(item => item.path == normalize('extended/css/common.scss'));
+                expect(extended).to.be.ok;
+                expect(extended.contents.toString().split('\n')).to.have.length(5);
+                expect(extended.contents.toString()).to.contain('@import \'base/elements/e-cta/sass/e-cta.scss\';');
+                expect(extended.contents.toString()).to.contain('@import \'base/elements/e-image/sass/e-image.scss\';');
+                expect(extended.contents.toString()).to.contain('@import \'extended/elements/e-image/sass/e-image.scss\';');
+
             });
             return promise;
         });

@@ -7,6 +7,7 @@
 const Task = require('entoj-system').task.Task;
 const SassConfiguration = require('../configuration/SassConfiguration.js').SassConfiguration;
 const FilesRepository = require('entoj-system').model.file.FilesRepository;
+const EntitiesRepository = require('entoj-system').model.entity.EntitiesRepository;
 const PathesConfiguration = require('entoj-system').model.configuration.PathesConfiguration;
 const SitesRepository = require('entoj-system').model.site.SitesRepository;
 const ContentType = require('entoj-system').model.ContentType;
@@ -30,19 +31,21 @@ class CompileSassTask extends Task
     /**
      *
      */
-    constructor(cliLogger, filesRepository, sitesRepository, pathesConfiguration, sassConfiguration, options)
+    constructor(cliLogger, filesRepository, sitesRepository, entitiesRepository, pathesConfiguration, sassConfiguration, options)
     {
         super(cliLogger);
 
         //Check params
         assertParameter(this, 'filesRepository', filesRepository, true, FilesRepository);
         assertParameter(this, 'sitesRepository', sitesRepository, true, SitesRepository);
+        assertParameter(this, 'entitiesRepository', entitiesRepository, true, EntitiesRepository);
         assertParameter(this, 'pathesConfiguration', pathesConfiguration, true, PathesConfiguration);
         assertParameter(this, 'sassConfiguration', sassConfiguration, true, SassConfiguration);
 
         // Assign options
         this._filesRepository = filesRepository;
         this._sitesRepository = sitesRepository;
+        this._entitiesRepository = entitiesRepository;
         this._pathesConfiguration = pathesConfiguration;
         this._sassConfiguration = sassConfiguration;
         this._options = options || {};
@@ -54,7 +57,7 @@ class CompileSassTask extends Task
      */
     static get injections()
     {
-        return { 'parameters': [CliLogger, FilesRepository, SitesRepository,
+        return { 'parameters': [CliLogger, FilesRepository, SitesRepository, EntitiesRepository,
             PathesConfiguration, SassConfiguration, 'task/CompileSassTask.options'] };
     }
 
@@ -92,6 +95,15 @@ class CompileSassTask extends Task
     get sitesRepository()
     {
         return this._sitesRepository;
+    }
+
+
+    /**
+     * @type model.entity.EntitiesRepository
+     */
+    get entitiesRepository()
+    {
+        return this._entitiesRepository;
     }
 
 
@@ -153,6 +165,90 @@ class CompileSassTask extends Task
      * @protected
      * @returns {Promise<Array>}
      */
+    generateFilesForEntities(site, entities, buildConfiguration, params)
+    {
+        // Prepare
+        const files = [];
+
+        // Get settings file - this is prepended to all generated files
+        let settingsFile = site.properties.getByPath('sass.settings', false);
+        if (!settingsFile && site.extends)
+        {
+            settingsFile = site.extends.properties.getByPath('sass.settings', false);
+        }
+
+        // Get all sites
+        const sites = [];
+        let currentSite = site;
+        while(currentSite)
+        {
+            sites.unshift(currentSite);
+            currentSite = currentSite.extends;
+        }
+
+        // Get scss files for each entity and site
+        const sourceFiles = {};
+        for (const entity of entities)
+        {
+            const group = entity.properties.getByPath('groups.css', this.sassConfiguration.defaultGroup);
+            sourceFiles[group] = sourceFiles[group] || [];
+            for (const s of sites)
+            {
+                const file = entity.files.find((file) =>
+                {
+                    const add = file.contentType === ContentType.SASS &&
+                        !file.basename.startsWith('_') &&
+                        file.site.isEqualTo(s);
+                    return add;
+                });
+                if (file)
+                {
+                    sourceFiles[group].push(file);
+                }
+            }
+        }
+
+        // Create sass files
+        for (const group in sourceFiles)
+        {
+            const filename = templateString(params.bundleTemplate,
+                {
+                    site: site,
+                    group: group
+                });
+            const workGroup = this.cliLogger.work('Generating <' + filename + '> for site <' + site.name + '> and group <' + group + '>');
+
+            let content = '';
+            if (settingsFile)
+            {
+                content+= `@import '${settingsFile}';\n`;
+            }
+            for (const file of sourceFiles[group])
+            {
+                let includePath = pathes.normalize(file.filename);
+                includePath = includePath.replace(pathes.normalize(this.pathesConfiguration.sites), '');
+                includePath = urls.normalizePathSeparators(pathes.trimLeadingSlash(includePath));
+                if (includePath !== settingsFile)
+                {
+                    content+= `@import '${includePath}';\n`;
+                }
+            }
+            const vinylFile = new VinylFile(
+                {
+                    path: filename,
+                    contents: new Buffer(content)
+                });
+            files.push(vinylFile);
+            this.cliLogger.end(workGroup);
+        }
+        return Promise.resolve(files);
+    }
+
+
+    /**
+     * @protected
+     * @returns {Promise<Array>}
+     */
     generateFiles(buildConfiguration, parameters)
     {
         const scope = this;
@@ -181,49 +277,23 @@ class CompileSassTask extends Task
             const files = [];
             for (const site of sites)
             {
-                // Get settings file - this is prepended to all generated files
-                let settingsFile = site.properties.getByPath('sass.settings', false);
-                if (!settingsFile && site.extends)
+                let entities = [];
+                if (params.entities)
                 {
-                    settingsFile = site.extends.properties.getByPath('sass.settings', false);
-                }
-
-                // Get sass sources
-                const filter = function(file)
-                {
-                    return file.contentType === ContentType.SASS && !file.basename.startsWith('_');
-                };
-                const sourceFiles = yield scope.filesRepository.getBySiteGrouped(site, filter, 'groups.css', scope.sassConfiguration.defaultGroup);
-
-                // Create sass files
-                for (const group in sourceFiles)
-                {
-                    const filename = templateString(params.bundleTemplate, { site: site, group: group });
-                    const workGroup = scope.cliLogger.work('Generating <' + filename + '> for site <' + site.name + '> and group <' + group + '>');
-
-                    let content = '';
-                    if (settingsFile)
+                    for (const entity of params.entities)
                     {
-                        content+= `@import '${settingsFile}';\n`;
-                    }
-                    for (const file of sourceFiles[group])
-                    {
-                        let includePath = pathes.normalize(file.filename);
-                        includePath = includePath.replace(pathes.normalize(scope.pathesConfiguration.sites), '');
-                        includePath = urls.normalizePathSeparators(pathes.trimLeadingSlash(includePath));
-                        if (includePath !== settingsFile)
+                        if (entity.usedBy.indexOf(site) > -1 || entity.site.isEqualTo(site))
                         {
-                            content+= `@import '${includePath}';\n`;
+                            entities.push(entity);
                         }
                     }
-                    const vinylFile = new VinylFile(
-                        {
-                            path: filename,
-                            contents: new Buffer(content)
-                        });
-                    files.push(vinylFile);
-                    scope.cliLogger.end(workGroup);
                 }
+                else
+                {
+                    entities = yield scope.entitiesRepository.getBySite(site);
+                }
+                const siteFiles = yield scope.generateFilesForEntities(site, entities, buildConfiguration, params);
+                files.push(...siteFiles);
             }
 
             // End
