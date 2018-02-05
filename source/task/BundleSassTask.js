@@ -130,16 +130,13 @@ class BundleSassTask extends WrappingTask
             {
                 prepend = '/** ' + buildConfiguration.get('sass.banner', false) + ' **/';
             }
-            const options =
+            const options = parameters || {};
+            options.decoratePrepend = prepend;
+            options.decorateVariables =
             {
-                query: parameters.query,
-                decoratePrepend: prepend,
-                decorateVariables:
-                {
-                    date: new Date(),
-                    gitHash: yield gitRev.long(),
-                    gitBranch: yield gitRev.branch()
-                }
+                date: new Date(),
+                gitHash: yield gitRev.long(),
+                gitBranch: yield gitRev.branch()
             };
             const result = yield new CompileSassTask(scope.cliLogger, scope.sitesRepository, scope.entitiesRepository, scope.pathesConfiguration, scope.sassConfiguration)
                 .pipe(new PostProcessSassTask(scope.cliLogger))
