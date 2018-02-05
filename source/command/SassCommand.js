@@ -6,10 +6,8 @@
  */
 const Command = require('entoj-system').command.Command;
 const SassConfiguration = require('../configuration/SassConfiguration.js').SassConfiguration;
-const CompileSassTask = require('../task/CompileSassTask.js').CompileSassTask;
-const PostProcessSassTask = require('../task/PostProcessSassTask.js').PostProcessSassTask;
+const BundleSassTask = require('../task/BundleSassTask.js').BundleSassTask;
 const WriteFilesTask = require('entoj-system').task.WriteFilesTask;
-const DecorateTask = require('entoj-system').task.DecorateTask;
 const PathesConfiguration = require('entoj-system').model.configuration.PathesConfiguration;
 const BuildConfiguration = require('entoj-system').model.configuration.BuildConfiguration;
 const ModelSynchronizer = require('entoj-system').watch.ModelSynchronizer;
@@ -118,28 +116,14 @@ class SassCommand extends Command
             const pathesConfiguration = scope.context.di.create(PathesConfiguration);
             const buildConfiguration = scope.context.di.create(BuildConfiguration);
             const sassConfiguration = scope.context.di.create(SassConfiguration);
-            let prepend = false;
-            if (buildConfiguration.get('sass.banner', false))
-            {
-                prepend = '/** ' + buildConfiguration.get('sass.banner', false) + ' **/';
-            }
             const options =
             {
                 query: parameters && parameters._ && parameters._[0] || '*',
-                writePath: yield pathesConfiguration.resolve((parameters && parameters.destination) || sassConfiguration.bundlePath),
-                decoratePrepend: prepend,
-                decorateVariables:
-                {
-                    date: new Date(),
-                    gitHash: yield gitRev.long(),
-                    gitBranch: yield gitRev.branch()
-                }
+                writePath: yield pathesConfiguration.resolve((parameters && parameters.destination) || sassConfiguration.bundlePath)
             };
             const mapping = new Map();
             mapping.set(CliLogger, logger);
-            yield scope.context.di.create(CompileSassTask, mapping)
-                .pipe(scope.context.di.create(PostProcessSassTask, mapping))
-                .pipe(scope.context.di.create(DecorateTask, mapping))
+            yield scope.context.di.create(BundleSassTask, mapping)
                 .pipe(scope.context.di.create(WriteFilesTask, mapping))
                 .run(buildConfiguration, options);
         }).catch(ErrorHandler.handler(scope));

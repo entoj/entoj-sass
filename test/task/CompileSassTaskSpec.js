@@ -35,7 +35,6 @@ describe(CompileSassTask.className, function()
         parameters.unshift(global.fixtures.pathesConfiguration);
         parameters.unshift(global.fixtures.entitiesRepository);
         parameters.unshift(global.fixtures.sitesRepository);
-        parameters.unshift(global.fixtures.filesRepository);
         parameters.unshift(global.fixtures.cliLogger);
         return parameters;
     }

@@ -6,7 +6,6 @@
  */
 const Task = require('entoj-system').task.Task;
 const SassConfiguration = require('../configuration/SassConfiguration.js').SassConfiguration;
-const FilesRepository = require('entoj-system').model.file.FilesRepository;
 const EntitiesRepository = require('entoj-system').model.entity.EntitiesRepository;
 const PathesConfiguration = require('entoj-system').model.configuration.PathesConfiguration;
 const SitesRepository = require('entoj-system').model.site.SitesRepository;
@@ -29,21 +28,23 @@ const templateString = require('es6-template-strings');
 class CompileSassTask extends Task
 {
     /**
-     *
+     * @param {cli.CliLogger} cliLogger
+     * @param {model.site.SitesRepository} sitesRepository
+     * @param {model.entity.EntitiesRepository} entitiesRepository
+     * @param {model.configuration.PathesConfiguration} pathesConfiguration
+     * @param {configuration.SassConfiguration} sassConfiguration
      */
-    constructor(cliLogger, filesRepository, sitesRepository, entitiesRepository, pathesConfiguration, sassConfiguration, options)
+    constructor(cliLogger, sitesRepository, entitiesRepository, pathesConfiguration, sassConfiguration, options)
     {
         super(cliLogger);
 
         //Check params
-        assertParameter(this, 'filesRepository', filesRepository, true, FilesRepository);
         assertParameter(this, 'sitesRepository', sitesRepository, true, SitesRepository);
         assertParameter(this, 'entitiesRepository', entitiesRepository, true, EntitiesRepository);
         assertParameter(this, 'pathesConfiguration', pathesConfiguration, true, PathesConfiguration);
         assertParameter(this, 'sassConfiguration', sassConfiguration, true, SassConfiguration);
 
         // Assign options
-        this._filesRepository = filesRepository;
         this._sitesRepository = sitesRepository;
         this._entitiesRepository = entitiesRepository;
         this._pathesConfiguration = pathesConfiguration;
@@ -53,17 +54,17 @@ class CompileSassTask extends Task
 
 
     /**
-     * @inheritDocs
+     * @inheritDoc
      */
     static get injections()
     {
-        return { 'parameters': [CliLogger, FilesRepository, SitesRepository, EntitiesRepository,
+        return { 'parameters': [CliLogger, SitesRepository, EntitiesRepository,
             PathesConfiguration, SassConfiguration, 'task/CompileSassTask.options'] };
     }
 
 
     /**
-     * @inheritDocs
+     * @inheritDoc
      */
     static get className()
     {
@@ -108,15 +109,6 @@ class CompileSassTask extends Task
 
 
     /**
-     * @type model.file.FilesRepository
-     */
-    get filesRepository()
-    {
-        return this._filesRepository;
-    }
-
-
-    /**
      * @type {Object}
      */
     get options()
@@ -126,7 +118,7 @@ class CompileSassTask extends Task
 
 
     /**
-     * @inheritDocs
+     * @inheritDoc
      */
     prepareParameters(buildConfiguration, parameters)
     {
@@ -176,6 +168,11 @@ class CompileSassTask extends Task
         {
             settingsFile = site.extends.properties.getByPath('sass.settings', false);
         }
+        const excludeFiles = [settingsFile];
+        if (site.extends)
+        {
+            excludeFiles.push(site.extends.properties.getByPath('sass.settings', false));
+        }
 
         // Get all sites
         const sites = [];
@@ -194,16 +191,16 @@ class CompileSassTask extends Task
             sourceFiles[group] = sourceFiles[group] || [];
             for (const s of sites)
             {
-                const file = entity.files.find((file) =>
+                const files = entity.files.filter((file) =>
                 {
                     const add = file.contentType === ContentType.SASS &&
                         !file.basename.startsWith('_') &&
                         file.site.isEqualTo(s);
                     return add;
                 });
-                if (file)
+                if (files)
                 {
-                    sourceFiles[group].push(file);
+                    sourceFiles[group].push(...files);
                 }
             }
         }
@@ -228,7 +225,7 @@ class CompileSassTask extends Task
                 let includePath = pathes.normalize(file.filename);
                 includePath = includePath.replace(pathes.normalize(this.pathesConfiguration.sites), '');
                 includePath = urls.normalizePathSeparators(pathes.trimLeadingSlash(includePath));
-                if (includePath !== settingsFile)
+                if (excludeFiles.indexOf(includePath) === -1)
                 {
                     content+= `@import '${includePath}';\n`;
                 }
