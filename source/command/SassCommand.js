@@ -15,7 +15,6 @@ const ErrorHandler = require('entoj-system').error.ErrorHandler;
 const CliLogger = require('entoj-system').cli.CliLogger;
 const Context = require('entoj-system').application.Context;
 const co = require('co');
-const gitRev = require('git-rev-promises');
 
 
 /**
