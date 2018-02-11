@@ -169,8 +169,8 @@ class CompileSassTask extends Task
             settingsFile = site.extends.properties.getByPath('sass.settings', false);
         }
         const excludeFiles = [settingsFile];
-        if (site.extends)
-        {
+        if (site.extends && site.extends.properties.getByPath('sass.settings', false))
+        {            
             excludeFiles.push(site.extends.properties.getByPath('sass.settings', false));
         }
 
@@ -182,6 +182,9 @@ class CompileSassTask extends Task
             sites.unshift(currentSite);
             currentSite = currentSite.extends;
         }
+
+        // Make sure that lower categories are rendered first
+        entities.sort((a, b) => a.id.category.position - b.id.category.position);        
 
         // Get scss files for each entity and site
         const sourceFiles = {};
@@ -202,7 +205,7 @@ class CompileSassTask extends Task
                 {
                     sourceFiles[group].push(...files);
                 }
-            }
+            }            
         }
 
         // Create sass files
