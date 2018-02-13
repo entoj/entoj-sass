@@ -184,7 +184,7 @@ class CompileSassTask extends Task
         }
 
         // Make sure that lower categories are rendered first
-        entities.sort((a, b) => a.id.category.position - b.id.category.position);        
+        entities.sort((a, b) => a.id.category.priority - b.id.category.priority);        
 
         // Get scss files for each entity and site
         const sourceFiles = {};
