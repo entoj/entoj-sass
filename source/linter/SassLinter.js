@@ -63,6 +63,15 @@ class SassLinter extends Linter
 
 
     /**
+     * @type {String}
+     */
+    get name()
+    {
+        return 'SASS';
+    }
+
+
+    /**
      * @param {String} content - The source that will be linted
      * @param {Object} options
      * @param {String} options.filename - The filename if source comes from a file
