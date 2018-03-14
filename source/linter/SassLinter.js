@@ -5,6 +5,7 @@
  * @ignore
  */
 const Linter = require('entoj-system').linter.Linter;
+const ContentKind = require('entoj-system').model.ContentKind;
 const sassLint = require('sass-lint');
 
 
@@ -68,6 +69,15 @@ class SassLinter extends Linter
     get name()
     {
         return 'SASS';
+    }
+
+
+    /**
+     * @type {String}
+     */
+    get contentKind()
+    {
+        return ContentKind.CSS;
     }
 
 
