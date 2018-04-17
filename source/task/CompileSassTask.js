@@ -18,7 +18,6 @@ const urls = require('entoj-system').utils.urls;
 const through2 = require('through2');
 const VinylFile = require('vinyl');
 const co = require('co');
-const sass = require('node-sass');
 const templateString = require('es6-template-strings');
 
 
@@ -170,7 +169,7 @@ class CompileSassTask extends Task
         }
         const excludeFiles = [settingsFile];
         if (site.extends && site.extends.properties.getByPath('sass.settings', false))
-        {            
+        {
             excludeFiles.push(site.extends.properties.getByPath('sass.settings', false));
         }
 
@@ -184,7 +183,7 @@ class CompileSassTask extends Task
         }
 
         // Make sure that lower categories are rendered first
-        entities.sort((a, b) => a.id.category.priority - b.id.category.priority);        
+        entities.sort((a, b) => a.id.category.priority - b.id.category.priority);
 
         // Get scss files for each entity and site
         const sourceFiles = {};
@@ -205,7 +204,7 @@ class CompileSassTask extends Task
                 {
                     sourceFiles[group].push(...files);
                 }
-            }            
+            }
         }
 
         // Create sass files
@@ -318,6 +317,7 @@ class CompileSassTask extends Task
         }
 
         const scope = this;
+        const sass = require('node-sass');
         const promise = co(function *()
         {
             const work = scope.cliLogger.work('Compiling file <' + file.path + '>');
