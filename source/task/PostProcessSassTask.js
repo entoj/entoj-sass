@@ -9,12 +9,6 @@ const CliLogger = require('entoj-system').cli.CliLogger;
 const ErrorHandler = require('entoj-system').error.ErrorHandler;
 const VinylFile = require('vinyl');
 const co = require('co');
-const postcss = require('postcss');
-const mqpacker = require('css-mqpacker');
-const cssnano = require('cssnano');
-const cssnext = require('postcss-cssnext');
-const urlrewrite = require('postcss-urlrewrite');
-const rtl = require('postcss-rtl');
 const doiuse = require('doiuse');
 
 
@@ -88,6 +82,12 @@ class PostProcessSassTask extends TransformingTask
     processFile(file, buildConfiguration, parameters)
     {
         const scope = this;
+        const postcss = require('postcss');
+        const mqpacker = require('css-mqpacker');
+        const cssnano = require('cssnano');
+        const cssnext = require('postcss-cssnext');
+        const urlrewrite = require('postcss-urlrewrite');
+        const rtl = require('postcss-rtl');
         const promise = co(function*()
         {
             // Prepare
