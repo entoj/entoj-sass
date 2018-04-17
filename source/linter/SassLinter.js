@@ -6,7 +6,6 @@
  */
 const Linter = require('entoj-system').linter.Linter;
 const ContentKind = require('entoj-system').model.ContentKind;
-const sassLint = require('sass-lint');
 
 
 /**
@@ -93,6 +92,7 @@ class SassLinter extends Linter
         {
             return Promise.resolve({ success: true, errorCount: 0, warningCount: 0, messages:[] });
         }
+        const sassLint = require('sass-lint');
         const linted = sassLint.lintText(
             {
                 'text': content,
