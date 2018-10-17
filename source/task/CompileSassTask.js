@@ -162,15 +162,17 @@ class CompileSassTask extends Task
         const files = [];
 
         // Get settings file - this is prepended to all generated files
-        let settingsFile = site.properties.getByPath('sass.settings', false);
-        if (!settingsFile && site.extends)
-        {
-            settingsFile = site.extends.properties.getByPath('sass.settings', false);
-        }
-        const excludeFiles = [settingsFile];
+        const settingsFiles = [];
+        const excludeFiles = [];
         if (site.extends && site.extends.properties.getByPath('sass.settings', false))
         {
-            excludeFiles.push(site.extends.properties.getByPath('sass.settings', false));
+            settingsFiles.push(site.extends.properties.getByPath('sass.settings', false));
+            excludeFiles.push(site.extends.properties.getByPath('sass.settings', false) + '.scss');
+        }
+        if (site.properties.getByPath('sass.settings', false))
+        {
+            settingsFiles.push(site.properties.getByPath('sass.settings', false));
+            excludeFiles.push(site.properties.getByPath('sass.settings', false) + '.scss');
         }
 
         // Get all sites
@@ -218,9 +220,9 @@ class CompileSassTask extends Task
             const workGroup = this.cliLogger.work('Generating <' + filename + '> for site <' + site.name + '> and group <' + group + '>');
 
             let content = '';
-            if (settingsFile)
+            for (const settingsFile of settingsFiles)
             {
-                content+= `@import '${settingsFile}';\n`;
+                content+= `@import '${settingsFile}'; /* Settings */\n`;
             }
             for (const file of sourceFiles[group])
             {
